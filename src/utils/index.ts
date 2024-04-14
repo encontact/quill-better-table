@@ -1,4 +1,4 @@
-export function css (domNode, rules) {
+export function css (domNode: any, rules: any) {
   if (typeof rules === 'object') {
     for (let prop in rules) {
       domNode.style[prop] = rules[prop]
@@ -12,7 +12,7 @@ export function css (domNode, rules) {
  * @param  {Element} container  container element
  * @return {Object}             an object with rect data
  */
-export function getRelativeRect (targetRect, container) {
+export function getRelativeRect (targetRect: any, container: any) : any {
   let containerRect = container.getBoundingClientRect()
 
   return {
@@ -31,7 +31,7 @@ export function getRelativeRect (targetRect, container) {
  * @param  {Array} uselessKeys  keys of removed properties
  * @return {Object}             new Object without useless properties
  */
-export function _omit (obj, uselessKeys) {
+export function _omit (obj: any, uselessKeys: any) : any {
   return obj && Object.keys(obj).reduce((acc, key) => {
     return uselessKeys.includes(key) ?
       acc :
@@ -48,7 +48,7 @@ export function _omit (obj, uselessKeys) {
  * @param {Event} evt
  * @return {Array} an array of event.path
  */
-export function getEventComposedPath (evt) {
+export function getEventComposedPath (evt: any) : Array<any> {
   let path
   // chrome, opera, safari, firefox
   path = evt.path || (evt.composedPath && evt.composedPath())
@@ -59,7 +59,7 @@ export function getEventComposedPath (evt) {
     let target = evt.target
     path.push(target)
 
-    while (target && target.parentNode) {
+    while (target && target.getParent) {
       target = target.parentNode
       path.push(target)
     }
@@ -68,11 +68,11 @@ export function getEventComposedPath (evt) {
   return path
 }
 
-export function convertToHex (rgb) {
+export function convertToHex (rgb: string) : string {
   var reg = /^#([0-9a-fA-f]{3}|[0-9a-fA-f]{6})$/;
   // if rgb
   if (/^(rgb|RGB)/.test(rgb)) {
-    var color = rgb.toString().match(/\d+/g);
+    var color = rgb.toString().match(/\d+/g) || [];
     var hex = "#";
 
     for (var i = 0; i < 3; i++) {

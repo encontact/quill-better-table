@@ -4,7 +4,7 @@ import { _omit, convertToHex } from './index'
 const Delta = Quill.import('delta')
 
 // rebuild delta
-export function matchTableCell (node, delta, scroll) {
+export function matchTableCell (node: any, delta: any, scroll: any) : any {
   const row = node.parentNode;
   const table = row.parentNode.tagName === 'TABLE'
     ? row.parentNode
@@ -25,7 +25,7 @@ export function matchTableCell (node, delta, scroll) {
     return delta
   }
 
-  delta = delta.reduce((newDelta, op) => {
+  delta = delta.reduce((newDelta: any, op: any) : any => {
     if (op.insert && typeof op.insert === 'string') {
       const lines = []
       let insertStr = op.insert
@@ -57,7 +57,7 @@ export function matchTableCell (node, delta, scroll) {
     return newDelta
   }, new Delta())
   
-  return delta.reduce((newDelta, op) => {
+  return delta.reduce((newDelta: any, op: any) : any => {
     if (op.insert && typeof op.insert === 'string' &&
       op.insert.startsWith('\n')) {
       newDelta.insert(op.insert, Object.assign(
@@ -87,7 +87,7 @@ export function matchTableCell (node, delta, scroll) {
 }
 
 // replace th tag with td tag
-export function matchTableHeader (node, delta, scroll) {
+export function matchTableHeader (node: any, delta: any, scroll: any) : any {
   const row = node.parentNode;
   const table = row.parentNode.tagName === 'TABLE'
     ? row.parentNode
@@ -107,7 +107,7 @@ export function matchTableHeader (node, delta, scroll) {
     return delta
   }
 
-  delta = delta.reduce((newDelta, op) => {
+  delta = delta.reduce((newDelta: any, op: any) => {
     if (op.insert && typeof op.insert === 'string') {
       const lines = []
       let insertStr = op.insert
@@ -144,7 +144,7 @@ export function matchTableHeader (node, delta, scroll) {
     return newDelta
   }, new Delta())
 
-  return delta.reduce((newDelta, op) => {
+  return delta.reduce((newDelta: any, op: any) => {
     if (op.insert && typeof op.insert === 'string' &&
       op.insert.startsWith('\n')) {
       newDelta.insert(op.insert, Object.assign(
@@ -163,7 +163,7 @@ export function matchTableHeader (node, delta, scroll) {
 }
 
 // supplement colgroup and col
-export function matchTable (node, delta, scroll) {
+export function matchTable (node: any, delta: any, scroll: any) : any {
   let newColDelta = new Delta()
   const topRow = node.querySelector('tr')
 
@@ -172,11 +172,11 @@ export function matchTable (node, delta, scroll) {
 
   const cellsInTopRow = Array.from(topRow.querySelectorAll('td'))
     .concat(Array.from(topRow.querySelectorAll('th')))
-  const maxCellsNumber = cellsInTopRow.reduce((sum, cell) => {
+  const maxCellsNumber = cellsInTopRow.reduce((sum: number, cell: any) : number => {
     const cellColspan = cell.getAttribute('colspan') || 1
     sum = sum + parseInt(cellColspan, 10)
     return sum
-  }, 0)
+  }, 0) as number
   const colsNumber = node.querySelectorAll('col').length
 
   // issue #2
@@ -192,7 +192,7 @@ export function matchTable (node, delta, scroll) {
     if (colsNumber === 0) return newColDelta.concat(delta)
 
     let lastNumber = 0
-    return delta.reduce((finalDelta, op) => {
+    return delta.reduce((finalDelta: any, op: any) => {
       finalDelta.insert(op.insert, op.attributes)
   
       if (op.attributes && op.attributes['table-col']) {

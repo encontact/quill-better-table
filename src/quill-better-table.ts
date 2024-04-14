@@ -1,18 +1,20 @@
-"use strict";
 // import Quill from 'quill'
 // import TableColumnTool from './modules/table-column-tool'
 // import TableSelection from './modules/table-selection'
 // import TableOperationMenu from './modules/table-operation-menu'
-Object.defineProperty(exports, "__esModule", { value: true });
+
 // // import table node matchers
 // import {
 //   matchTableCell,
 //   matchTableHeader,
 //   matchTable
 // } from './utils/node-matchers'
+
 // import { getEventComposedPath } from './utils/index'
+
 // const Module = Quill.import('core/module')
 // const Delta = Quill.import('delta')
+
 // import {
 //   TableCol,
 //   TableColGroup,
@@ -25,6 +27,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 //   rowId,
 //   cellId
 // } from './formats/table';
+
 // class BetterTable extends Module {
 //   static register() {
 //     Quill.register(TableCol, true);
@@ -39,18 +42,23 @@ Object.defineProperty(exports, "__esModule", { value: true });
 //     // register customized Header，overwriting quill built-in Header
 //     // Quill.register('formats/header', Header, true);
 //   }
+
 //   constructor(quill, options) {
 //     super(quill, options);
+
 //     // handle click on quill-better-table
 //     this.quill.root.addEventListener('click', (evt) => {
 //       // bugfix: evt.path is undefined in Safari, FF, Micro Edge
 //       const path = getEventComposedPath(evt)
+
 //       if (!path || path.length <= 0) return
+
 //       const tableNode = path.filter(node => {
 //         return node.tagName &&
 //           node.tagName.toUpperCase() === 'TABLE' &&
 //           node.classList.contains('quill-better-table')
 //       })[0]
+
 //       if (tableNode) {
 //         // current table clicked
 //         if (this.table === tableNode) return
@@ -62,31 +70,38 @@ Object.defineProperty(exports, "__esModule", { value: true });
 //         this.hideTableTools()
 //       }
 //     }, false)
+
 //     // handle right click on quill-better-table
 //     this.quill.root.addEventListener('contextmenu', (evt) => {
 //       if (!this.table) return true
 //       evt.preventDefault()
+
 //       // bugfix: evt.path is undefined in Safari, FF, Micro Edge
 //       const path = getEventComposedPath(evt)
 //       if (!path || path.length <= 0) return
+
 //       const tableNode = path.filter(node => {
 //         return node.tagName &&
 //           node.tagName.toUpperCase() === 'TABLE' &&
 //           node.classList.contains('quill-better-table')
 //       })[0]
+
 //       const rowNode = path.filter(node => {
 //         return node.tagName &&
 //           node.tagName.toUpperCase() === 'TR' &&
 //           node.getAttribute('data-row')
 //       })[0]
+
 //       const cellNode = path.filter(node => {
 //         return node.tagName &&
 //           node.tagName.toUpperCase() === 'TD' &&
 //           node.getAttribute('data-row')
 //       })[0]
+
 //       let isTargetCellSelected = this.tableSelection.selectedTds
 //         .map(tableCell => tableCell.domNode)
 //         .includes(cellNode)
+
 //       if (this.tableSelection.selectedTds.length <= 0 ||
 //         !isTargetCellSelected) {
 //         this.tableSelection.setSelection(
@@ -94,8 +109,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 //           cellNode.getBoundingClientRect()
 //         )
 //       }
+
 //       if (this.tableOperationMenu)
 //         this.tableOperationMenu = this.tableOperationMenu.destroy()
+
 //       if (tableNode) {
 //         this.tableOperationMenu = new TableOperationMenu({
 //           table: tableNode,
@@ -106,6 +123,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 //         }, quill, options.operationMenu)
 //       }
 //     }, false)
+
 //     // add keyboard binding：Backspace
 //     // prevent user hits backspace to delete table cell
 //     const KeyBoard = quill.getModule('keyboard')
@@ -129,17 +147,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 //     // I changed the order of binding callbacks
 //     let thisBinding = quill.keyboard.bindings['Backspace'].pop()
 //     quill.keyboard.bindings['Backspace'].splice(0, 1, thisBinding)
+
 //     // add Matchers to match and render quill-better-table for initialization
 //     // or pasting
 //     quill.clipboard.addMatcher('td', matchTableCell)
 //     quill.clipboard.addMatcher('th', matchTableHeader)
 //     quill.clipboard.addMatcher('table', matchTable)
 //     // quill.clipboard.addMatcher('h1, h2, h3, h4, h5, h6', matchHeader)
+
 //     // remove matcher for tr tag
 //     quill.clipboard.matchers = quill.clipboard.matchers.filter(matcher => {
 //       return matcher[0] !== 'tr'
 //     })
 //   }
+
 //   getTable(range = this.quill.getSelection()) {
 //     if (range == null) return [null, null, null, -1];
 //     const [cellLine, offset] = this.quill.getLine(range.index);
@@ -151,15 +172,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 //     const table = row.table();
 //     return [table, row, cell, offset];
 //   }
+
 //   insertTable(rows, columns) {
 //     const range = this.quill.getSelection(true)
 //     if (range == null) return
 //     let currentBlot = this.quill.getLeaf(range.index)[0]
 //     let delta = new Delta().retain(range.index)
+
 //     if (isInTableCell(currentBlot)) {
 //       console.warn(`Can not insert table into a table cell.`)
 //       return;
 //     }
+
 //     delta.insert('\n')
 //     // insert table column
 //     delta = new Array(columns).fill('\n').reduce((memo, text) => {
@@ -174,14 +198,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 //         return memo
 //       }, memo)
 //     }, delta)
+
 //     this.quill.updateContents(delta, Quill.sources.USER)
 //     this.quill.setSelection(range.index + columns + 1, Quill.sources.API)
 //   }
+
 //   showTableTools (table, quill, options) {
 //     this.table = table
 //     this.columnTool = new TableColumnTool(table, quill, options)
 //     this.tableSelection = new TableSelection(table, quill, options)
 //   }
+
 //   hideTableTools () {
 //     this.columnTool && this.columnTool.destroy()
 //     this.tableSelection && this.tableSelection.destroy()
@@ -192,6 +219,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 //     this.table = null
 //   }
 // }
+
 // BetterTable.keyboardBindings = {
 //   'table-cell-line backspace': {
 //     key: 'Backspace',
@@ -206,6 +234,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 //       return true
 //     },
 //   },
+
 //   'table-cell-line delete': {
 //     key: 'Delete',
 //     format: ['table-cell-line'],
@@ -213,6 +242,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 //     suffix: /^$/,
 //     handler() {},
 //   },
+
 //   'table-cell-line enter': {
 //     key: 'Enter',
 //     shiftKey: null,
@@ -247,6 +277,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 //       });
 //     },
 //   },
+
 //   'table-cell-line up': makeTableArrowHandler(true),
 //   'table-cell-line down': makeTableArrowHandler(false),
 //   'down-to-table': {
@@ -257,11 +288,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 //       if (target && target.statics.blotName === 'table-view') {
 //         const targetCell = target.table().rows()[0].children.head
 //         const targetLine = targetCell.children.head
+        
 //         this.quill.setSelection(
 //           targetLine.offset(this.quill.scroll),
 //           0,
 //           Quill.sources.USER
 //         )
+
 //         return false
 //       }
 //       return true
@@ -276,17 +309,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 //         const rows = target.table().rows()
 //         const targetCell = rows[rows.length - 1].children.head
 //         const targetLine = targetCell.children.head
+        
 //         this.quill.setSelection(
 //           targetLine.offset(this.quill.scroll),
 //           0,
 //           Quill.sources.USER
 //         )
+
 //         return false
 //       }
 //       return true
 //     }
 //   }
 // }
+
 // function makeTableArrowHandler (up) {
 //   return {
 //     key: up ? 'ArrowUp' : 'ArrowDown',
@@ -297,22 +333,27 @@ Object.defineProperty(exports, "__esModule", { value: true });
 //       const key = up ? 'prev' : 'next'
 //       const targetLine = context.line[key]
 //       if (targetLine != null) return true
+
 //       const cell = context.line.parent
 //       const targetRow = cell.parent[key]
+
 //       if (targetRow != null && targetRow.statics.blotName === 'table-row') {
 //         let targetCell = targetRow.children.head
 //         let totalColspanOfTargetCell = parseInt(targetCell.formats()['colspan'], 10)
 //         let cur = cell
 //         let totalColspanOfCur = parseInt(cur.formats()['colspan'], 10)
+
 //         // get targetCell above current cell depends on colspan
 //         while (cur.prev != null) {
 //           cur = cur.prev
 //           totalColspanOfCur += parseInt(cur.formats()['colspan'], 10)
 //         }
+        
 //         while (targetCell.next != null && totalColspanOfTargetCell < totalColspanOfCur) {
 //           targetCell = targetCell.next
 //           totalColspanOfTargetCell += parseInt(targetCell.formats()['colspan'], 10)
 //         }
+
 //         const index = targetCell.offset(this.quill.scroll)
 //         this.quill.setSelection(index, 0, Quill.sources.USER)
 //       } else {
@@ -337,9 +378,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 //     },
 //   };
 // }
+
 // function isTableCell (blot) {
 //   return blot.statics.blotName === TableCell.blotName
 // }
+
 // function isInTableCell (current) {
 //   return current && current.parent
 //     ? isTableCell(current.parent)
@@ -347,5 +390,5 @@ Object.defineProperty(exports, "__esModule", { value: true });
 //       : isInTableCell(current.parent)
 //     : false
 // }
+
 // export default BetterTable;
-//# sourceMappingURL=quill-better-table.js.map

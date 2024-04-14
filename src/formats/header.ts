@@ -1,4 +1,5 @@
 import Quill from "quill"
+import Block from "quill/blots/block"
 import { 
   TableCell,
   TableCellLine,
@@ -6,10 +7,10 @@ import {
   CELL_ATTRIBUTES
 } from './table'
 
-const Block = Quill.import("blots/block")
+Quill.import('blots/block')
 
 class Header extends Block {
-  static create (value) {
+  static create (value: any) : any {
     if (typeof value === 'string') {
       value = { value }
     }
@@ -27,11 +28,11 @@ class Header extends Block {
     return node
   }
 
-  static formats(domNode) {
-    const formats = {}
+  static formats(domNode: any) : any {
+    const formats = { value: 0 }
     formats.value = this.tagName.indexOf(domNode.tagName) + 1
 
-    return CELL_ATTRIBUTES.concat(CELL_IDENTITY_KEYS).reduce((formats, attribute) => {
+    return CELL_ATTRIBUTES.concat(CELL_IDENTITY_KEYS).reduce((formats: any, attribute: string) : any => {
       if (domNode.hasAttribute(`data-${attribute}`)) {
         formats[attribute] = domNode.getAttribute(`data-${attribute}`) || undefined
       }
@@ -39,7 +40,7 @@ class Header extends Block {
     }, formats)
   }
 
-  format (name, value) {
+  format (name: any, value: any) {
     const { row, cell, rowspan, colspan } = Header.formats(this.domNode)
     if (name === Header.blotName) {
       if (value) {
@@ -64,7 +65,7 @@ class Header extends Block {
     }
   }
 
-  optimize(context) {
+  optimize(context: any) {
     const { row, rowspan, colspan } = Header.formats(this.domNode)
 
     if (

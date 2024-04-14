@@ -1,10 +1,15 @@
 import Quill from "quill"
+import Block from "quill/blots/block"
+import Container from "quill/blots/container"
+import Break from "quill/blots/break"
+import { InlineBlot, EmbedBlot } from 'parchment';
+
 import { getRelativeRect } from '../utils'
 import Header from './header'
 
-const Break = Quill.import("blots/break")
-const Block = Quill.import("blots/block")
-const Container = Quill.import("blots/container")
+Quill.import("blots/break")
+Quill.import('blots/block')
+Quill.import("blots/container")
 
 const COL_ATTRIBUTES = ["width"]
 const COL_DEFAULT = {
@@ -19,7 +24,7 @@ const CELL_DEFAULT = {
 const ERROR_LIMIT = 5
 
 class TableCellLine extends Block {
-  static create(value) {
+  static create(value: any) : any {
     const node = super.create(value)
 
     CELL_IDENTITY_KEYS.forEach(key => {
@@ -28,8 +33,10 @@ class TableCellLine extends Block {
       node.setAttribute(`data-${key}`, value[key] || identityMaker())
     })
 
-    CELL_ATTRIBUTES.forEach(attrName => {
-      node.setAttribute(`data-${attrName}`, value[attrName] || CELL_DEFAULT[attrName])
+    CELL_ATTRIBUTES.forEach((attrName: string) => {
+      type ObjectKey = keyof typeof CELL_DEFAULT;
+      const attribute = attrName as ObjectKey;
+      node.setAttribute(`data-${attrName}`, value[attrName] || CELL_DEFAULT[attribute])
     })
 
     if (value['cell-bg']) {
@@ -39,10 +46,10 @@ class TableCellLine extends Block {
     return node
   }
 
-  static formats(domNode) {
+  static formats(domNode: any) : any {
     const formats = {}
 
-    return CELL_ATTRIBUTES.concat(CELL_IDENTITY_KEYS).concat(['cell-bg']).reduce((formats, attribute) => {
+    return CELL_ATTRIBUTES.concat(CELL_IDENTITY_KEYS).concat(['cell-bg']).reduce((formats: any, attribute: string) => {
       if (domNode.hasAttribute(`data-${attribute}`)) {
         formats[attribute] = domNode.getAttribute(`data-${attribute}`) || undefined
       }
@@ -50,7 +57,7 @@ class TableCellLine extends Block {
     }, formats)
   }
 
-  format(name, value) {
+  format(name: any, value: any) {
     if (CELL_ATTRIBUTES.concat(CELL_IDENTITY_KEYS).indexOf(name) > -1) {
       if (value) {
         this.domNode.setAttribute(`data-${name}`, value)
@@ -78,7 +85,7 @@ class TableCellLine extends Block {
     }
   }
 
-  optimize(context) {
+  optimize(context: any) : void {
     // cover shadowBlot's wrap call, pass params parentBlot initialize
     // needed
     const rowId = this.domNode.getAttribute('data-row')
@@ -106,12 +113,13 @@ TableCellLine.className = "qlbt-cell-line"
 TableCellLine.tagName = "P"
 
 class TableCell extends Container {
-  checkMerge() {
-    if (super.checkMerge() && this.next.children.head != null) {
-      const thisHead = this.children.head.formats()[this.children.head.statics.blotName]
-      const thisTail = this.children.tail.formats()[this.children.tail.statics.blotName]
-      const nextHead = this.next.children.head.formats()[this.next.children.head.statics.blotName]
-      const nextTail = this.next.children.tail.formats()[this.next.children.tail.statics.blotName]
+  checkMerge() : boolean {
+    if (super.checkMerge() && this.next?.children.head != null) {
+      // The conversion to InlineBlot is necessary because the formats method not exists on Blot interface.
+      const thisHead = (this.children?.head as InlineBlot).formats()[this.children.head?.statics?.blotName || '']
+      const thisTail = (this.children?.tail as InlineBlot).formats()[this.children.tail?.statics?.blotName || '']
+      const nextHead = (this.next?.children?.head as InlineBlot).formats()[this.next.children.head.statics.blotName]
+      const nextTail = (this.next?.children?.tail as InlineBlot).formats()[this.next.children.tail?.statics?.blotName || '']
       return (
         thisHead.cell === thisTail.cell &&
         thisHead.cell === nextHead.cell &&
@@ -121,8 +129,8 @@ class TableCell extends Container {
     return false
   }
 
-  static create(value) {
-    const node = super.create(value)
+  static create(value: any) : any {
+    const node = super.create(value) as any
     node.setAttribute("data-row", value.row)
 
     CELL_ATTRIBUTES.forEach(attrName => {
@@ -139,8 +147,8 @@ class TableCell extends Container {
     return node
   }
 
-  static formats(domNode) {
-    const formats = {}
+  static formats(domNode: any) : any {
+    const formats = { row: '', 'cell-bg': '' }
 
     if (domNode.hasAttribute("data-row")) {
       formats["row"] = domNode.getAttribute("data-row")
@@ -150,7 +158,7 @@ class TableCell extends Container {
       formats["cell-bg"] = domNode.getAttribute("data-cell-bg")
     }
 
-    return CELL_ATTRIBUTES.reduce((formats, attribute) => {
+    return CELL_ATTRIBUTES.reduce((formats: any, attribute: string) => {
       if (domNode.hasAttribute(attribute)) {
         formats[attribute] = domNode.getAttribute(attribute)
       }
@@ -159,25 +167,25 @@ class TableCell extends Container {
     }, formats)
   }
 
-  cellOffset() {
+  cellOffset() : number {
     if (this.parent) {
       return this.parent.children.indexOf(this)
     }
     return -1
   }
 
-  formats() {
-    const formats = {}
+  formats() : any {
+    const formats = { row: '', 'cell-bg': '' }
 
     if (this.domNode.hasAttribute("data-row")) {
-      formats["row"] = this.domNode.getAttribute("data-row")
+      formats["row"] = this.domNode.getAttribute("data-row") || ''
     }
 
     if (this.domNode.hasAttribute("data-cell-bg")) {
-      formats["cell-bg"] = this.domNode.getAttribute("data-cell-bg")
+      formats["cell-bg"] = this.domNode.getAttribute("data-cell-bg") || ''
     }
 
-    return CELL_ATTRIBUTES.reduce((formats, attribute) => {
+    return CELL_ATTRIBUTES.reduce((formats: any, attribute: string) => {
       if (this.domNode.hasAttribute(attribute)) {
         formats[attribute] = this.domNode.getAttribute(attribute)
       }
@@ -186,7 +194,7 @@ class TableCell extends Container {
     }, formats)
   }
 
-  toggleAttribute (name, value) {
+  toggleAttribute (name: string, value: string) : void {
     if (value) {
       this.domNode.setAttribute(name, value)
     } else {
@@ -194,13 +202,14 @@ class TableCell extends Container {
     }
   }
 
-  formatChildren (name, value) {
+  formatChildren (name: string, value: any) : void {
     this.children.forEach(child => {
-      child.format(name, value)
+      // Cat to EmbedBlot because the "format" method not exists on Blot interface with this parameters.
+      (child as EmbedBlot).format(name, value)
     })
   }
 
-  format(name, value) {
+  format(name: string, value: any) : void {
     if (CELL_ATTRIBUTES.indexOf(name) > -1) {
       this.toggleAttribute(name, value)
       this.formatChildren(name, value)
@@ -217,11 +226,13 @@ class TableCell extends Container {
         this.domNode.style.backgroundColor = 'initial'
       }
     } else {
-      super.format(name, value)
+    //// Using formatAt instead format because not found ideal way to format the TableCellLine.
+    //   super.format(name, value)
+      super.formatAt(0, 0, name, value)
     }
   }
 
-  optimize(context) {
+  optimize(context: any) : void {
     const rowId = this.domNode.getAttribute("data-row")
 
     if (this.statics.requiredContainer &&
@@ -233,18 +244,18 @@ class TableCell extends Container {
     super.optimize(context)
   }
 
-  row() {
+  row() : any {
     return this.parent
   }
 
-  rowOffset() {
+  rowOffset() : number {
     if (this.row()) {
       return this.row().rowOffset()
     }
     return -1
   }
 
-  table() {
+  table() : any {
     return this.row() && this.row().table()
   }
 }
@@ -252,12 +263,13 @@ TableCell.blotName = "table"
 TableCell.tagName = "TD"
 
 class TableRow extends Container {
-  checkMerge() {
-    if (super.checkMerge() && this.next.children.head != null) {
-      const thisHead = this.children.head.formats()
-      const thisTail = this.children.tail.formats()
-      const nextHead = this.next.children.head.formats()
-      const nextTail = this.next.children.tail.formats()
+  checkMerge() : boolean {
+    if (super.checkMerge() && this.next?.children.head != null) {
+      // The conversion to InlineBlot is necessary because the formats method not exists on Blot interface.
+      const thisHead = (this.children?.head as InlineBlot).formats()
+      const thisTail = (this.children?.tail as InlineBlot).formats()
+      const nextHead = (this.next.children?.head as InlineBlot).formats()
+      const nextTail = (this.next.children?.tail as InlineBlot).formats()
 
       return (
         thisHead.row === thisTail.row &&
@@ -268,14 +280,14 @@ class TableRow extends Container {
     return false
   }
 
-  static create(value) {
-    const node = super.create(value)
+  static create(value: any) : any {
+    const node = super.create(value) as any
     node.setAttribute("data-row", value.row)
     return node
   }
 
-  formats() {
-    return ["row"].reduce((formats, attrName) => {
+  formats() : any {
+    return ["row"].reduce((formats: any, attrName: string) : any => {
       if (this.domNode.hasAttribute(`data-${attrName}`)) {
         formats[attrName] = this.domNode.getAttribute(`data-${attrName}`)
       }
@@ -283,7 +295,7 @@ class TableRow extends Container {
     }, {})
   }
 
-  optimize (context) {
+  optimize (context: any) {
     // optimize function of ShadowBlot
     if (
       this.statics.requiredContainer &&
@@ -307,14 +319,14 @@ class TableRow extends Container {
     }
   }
 
-  rowOffset() {
+  rowOffset() : number {
     if (this.parent) {
       return this.parent.children.indexOf(this)
     }
     return -1
   }
 
-  table() {
+  table() : any {
     return this.parent && this.parent.parent
   }
 }
@@ -326,16 +338,18 @@ TableBody.blotName = "table-body"
 TableBody.tagName = "TBODY"
 
 class TableCol extends Block {
-  static create (value) {
+  static create (value: any) : any {
     let node = super.create(value)
-    COL_ATTRIBUTES.forEach(attrName => {
-      node.setAttribute(`${attrName}`, value[attrName] || COL_DEFAULT[attrName])
+    COL_ATTRIBUTES.forEach((attrName: string) => {
+      type ObjectKey = keyof typeof COL_DEFAULT;
+      const attribute = attrName as ObjectKey;
+      node.setAttribute(`${attrName}`, value[attrName] || COL_DEFAULT[attribute])
     })
     return node
   }
 
-  static formats(domNode) {
-    return COL_ATTRIBUTES.reduce((formats, attribute) => {
+  static formats(domNode: any) : any {
+    return COL_ATTRIBUTES.reduce((formats: any, attribute: string) => {
       if (domNode.hasAttribute(`${attribute}`)) {
         formats[attribute] =
           domNode.getAttribute(`${attribute}`) || undefined
@@ -344,9 +358,11 @@ class TableCol extends Block {
     }, {})
   }
 
-  format(name, value) {
+  format(name: string, value: any) {
     if (COL_ATTRIBUTES.indexOf(name) > -1) {
-      this.domNode.setAttribute(`${name}`, value || COL_DEFAULT[name])
+      type ObjectKey = keyof typeof COL_DEFAULT;
+      const attribute = name as ObjectKey;
+      this.domNode.setAttribute(`${name}`, value || COL_DEFAULT[attribute])
     } else {
       super.format(name, value)
     }
@@ -364,21 +380,21 @@ TableColGroup.blotName = "table-col-group"
 TableColGroup.tagName = "colgroup"
 
 class TableContainer extends Container {
-  static create() {
+  static create() : any{
     let node = super.create()
     return node
   }
 
-  constructor (scroll, domNode) {
+  constructor (scroll: any, domNode: any) {
     super(scroll, domNode)
     this.updateTableWidth()
   }
 
-  updateTableWidth () {
-    setTimeout(() => {
+  updateTableWidth () : void {
+    setTimeout(() : void => {
       const colGroup = this.colGroup()
       if (!colGroup) return
-      const tableWidth = colGroup.children.reduce((sumWidth, col) => {
+      const tableWidth = colGroup.children.reduce((sumWidth: number, col: InlineBlot) => {
         sumWidth = sumWidth + parseInt(col.formats()[TableCol.blotName].width, 10)
         return sumWidth
       }, 0)
@@ -386,21 +402,21 @@ class TableContainer extends Container {
     }, 0)
   }
 
-  cells(column) {
+  cells(column: number): any {
     return this.rows().map(row => row.children.at(column))
   }
 
-  colGroup () {
-    return this.children.head
+  colGroup () : InlineBlot {
+    return this.children.head as InlineBlot
   }
 
-  deleteColumns(compareRect, delIndexes = [], editorWrapper) {
+  deleteColumns(compareRect: any, delIndexes = [], editorWrapper: any) {
     const [body] = this.descendants(TableBody)
     if (body == null || body.children.head == null) return
 
     const tableCells = this.descendants(TableCell)
-    const removedCells = []
-    const modifiedCells = []
+    const removedCells: TableCell[] = []
+    const modifiedCells: TableCell[] = []
 
     tableCells.forEach(cell => {
       const cellRect = getRelativeRect(
@@ -427,8 +443,8 @@ class TableContainer extends Container {
     }
 
     // remove the matches column tool cell
-    delIndexes.forEach((delIndex) => {
-      this.colGroup().children.at(delIndexes[0]).remove()
+    delIndexes.forEach(() => {
+      this.colGroup().children.at(delIndexes[0])?.remove()
     })
 
     removedCells.forEach(cell => {
@@ -437,22 +453,23 @@ class TableContainer extends Container {
 
     modifiedCells.forEach(cell => {
       const cellColspan = parseInt(cell.formats().colspan, 10)
-      const cellWidth = parseInt(cell.formats().width, 10)
+    //// Commented because not used anywhere.
+    //   const cellWidth = parseInt(cell.formats().width, 10)
       cell.format('colspan', cellColspan - delIndexes.length)
     })
 
     this.updateTableWidth()
   }
 
-  deleteRow(compareRect, editorWrapper) {
+  deleteRow(compareRect: any, editorWrapper: any) {
     const [body] = this.descendants(TableBody)
     if (body == null || body.children.head == null) return
 
     const tableCells = this.descendants(TableCell)
     const tableRows = this.descendants(TableRow)
-    const removedCells = []  // cells to be removed
-    const modifiedCells = [] // cells to be modified
-    const fallCells = []     // cells to fall into next row
+    const removedCells: TableCell[] = []  // cells to be removed
+    const modifiedCells: TableCell[] = [] // cells to be modified
+    const fallCells: TableCell[] = []     // cells to fall into next row
 
     // compute rows to remove
     // bugfix: #21 There will be a empty tr left if delete the last row of a table
@@ -516,10 +533,10 @@ class TableContainer extends Container {
         cell.domNode.getBoundingClientRect(),
         editorWrapper
       )
-      const nextRow = cell.parent.next
+      const nextRow = cell.parent.next as InlineBlot
       const cellsInNextRow = nextRow.children
 
-      const refCell = cellsInNextRow.reduce((ref, compareCell) => {
+      const refCell = cellsInNextRow.reduce((ref: any, compareCell: TableCell) : any => {
         const compareRect = getRelativeRect(
           compareCell.domNode.getBoundingClientRect(),
           editorWrapper
@@ -547,15 +564,15 @@ class TableContainer extends Container {
     removedRows.forEach(row => row.remove())
   }
 
-  tableDestroy() {
-    const quill = Quill.find(this.scroll.domNode.parentNode)
-    const tableModule = quill.getModule("better-table")
+  tableDestroy() : void {
+    const quill = Quill.find(this.scroll.domNode.parentNode as HTMLElement) as Quill
+    const tableModule = quill.getModule("better-table") as any
     this.remove()
     tableModule.hideTableTools()
     quill.update(Quill.sources.USER)
   }
 
-  insertCell(tableRow, ref) {
+  insertCell(tableRow: TableRow, ref: any) : void {
     const id = cellId()
     const rId = tableRow.formats().row
     const tableCell = this.scroll.create(
@@ -563,7 +580,7 @@ class TableContainer extends Container {
       Object.assign({}, CELL_DEFAULT, {
         row: rId
       })
-    )
+    ) as TableCell
     const cellLine = this.scroll.create(TableCellLine.blotName, {
       row: rId,
       cell: id
@@ -577,15 +594,15 @@ class TableContainer extends Container {
     }
   }
 
-  insertColumn(compareRect, colIndex, isRight = true, editorWrapper) {
+  insertColumn(compareRect: any, colIndex: number, isRight: boolean = true, editorWrapper: any) : TableCell[] {
     const [body] = this.descendants(TableBody)
     const [tableColGroup] = this.descendants(TableColGroup)
     const tableCols = this.descendants(TableCol)
-    let addAsideCells = []
-    let modifiedCells = []
-    let affectedCells = []
+    let addAsideCells: TableCell[] = []
+    let modifiedCells: TableCell[] = []
+    let affectedCells: TableCell[] = []
 
-    if (body == null || body.children.head == null) return
+    if (body == null || body.children.head == null) return []
     const tableCells = this.descendants(TableCell)
     tableCells.forEach(cell => {
       const cellRect = getRelativeRect(
@@ -625,7 +642,7 @@ class TableContainer extends Container {
     addAsideCells.forEach(cell => {
       const ref = isRight ? cell.next : cell
       const id = cellId()
-      const tableRow = cell.parent
+      const tableRow = cell.parent as TableRow
       const rId = tableRow.formats().row
       const cellFormats = cell.formats()
       const tableCell = this.scroll.create(
@@ -634,7 +651,7 @@ class TableContainer extends Container {
           row: rId,
           rowspan: cellFormats.rowspan
         })
-      )
+      ) as TableCell
       const cellLine = this.scroll.create(TableCellLine.blotName, {
         row: rId,
         cell: id,
@@ -675,7 +692,7 @@ class TableContainer extends Container {
     return affectedCells
   }
 
-  insertRow(compareRect, isDown, editorWrapper) {
+  insertRow(compareRect: any, isDown: boolean, editorWrapper: any) {
     const [body] = this.descendants(TableBody)
     if (body == null || body.children.head == null) return
 
@@ -683,10 +700,10 @@ class TableContainer extends Container {
     const rId = rowId()
     const newRow = this.scroll.create(TableRow.blotName, {
       row: rId
-    })
-    let addBelowCells = []
-    let modifiedCells = []
-    let affectedCells = []
+    }) as TableRow
+    let addBelowCells: TableCell[] = []
+    let modifiedCells: TableCell[] = []
+    let affectedCells: TableCell[] = []
 
     tableCells.forEach(cell => {
       const cellRect = getRelativeRect(
@@ -717,7 +734,7 @@ class TableContainer extends Container {
 
     // ordered table cells with rect.x, fix error for inserting
     // new table cell in complicated table with wrong order.
-    const sortFunc = (cellA, cellB) => {
+    const sortFunc = (cellA: TableCell, cellB: TableCell): number => {
       let x1 = cellA.domNode.getBoundingClientRect().x
       let x2 = cellB.domNode.getBoundingClientRect().x
       return x1 - x2
@@ -730,12 +747,12 @@ class TableContainer extends Container {
 
       const tableCell = this.scroll.create(TableCell.blotName, Object.assign(
         {}, CELL_DEFAULT, { row: rId, colspan: cellFormats.colspan }
-      ))
+      )) as TableCell
       const cellLine = this.scroll.create(TableCellLine.blotName, {
         row: rId,
         cell: cId,
         colspan: cellFormats.colspan
-      })
+      }) as any
       const empty = this.scroll.create(Break.blotName)
       cellLine.appendChild(empty)
       tableCell.appendChild(cellLine)
@@ -767,8 +784,8 @@ class TableContainer extends Container {
     return affectedCells
   }
 
-  mergeCells (compareRect, mergingCells, rowspan, colspan, editorWrapper) {
-    const mergedCell = mergingCells.reduce((result, tableCell, index) => {
+  mergeCells (compareRect: any, mergingCells: TableCell[], rowspan: any, colspan: any, editorWrapper: any) : TableCell | null {
+    const mergedCell = mergingCells.reduce((result: TableCell, tableCell, index) : TableCell => {
       if (index !== 0) {
         result && tableCell.moveChildren(result)
         tableCell.remove()
@@ -781,9 +798,11 @@ class TableContainer extends Container {
       return result
     }, null)
 
+    if(mergedCell === null) return null
+
     let rowId = mergedCell.domNode.getAttribute('data-row')
-    let cellId = mergedCell.children.head.domNode.getAttribute('data-cell')
-    mergedCell.children.forEach(cellLine => {
+    let cellId = (mergedCell.children.head?.domNode as any).getAttribute('data-cell')
+    mergedCell.children.forEach((cellLine: InlineBlot) => {
       cellLine.format('cell', cellId)
       cellLine.format('row', rowId)
       cellLine.format('colspan', colspan)
@@ -793,8 +812,8 @@ class TableContainer extends Container {
     return mergedCell
   }
 
-  unmergeCells (unmergingCells, editorWrapper) {
-    let cellFormats = {}
+  unmergeCells (unmergingCells: TableCell[], editorWrapper: any) {
+    let cellFormats = { row: '', cell: '', rowspan: 1, colspan: 1 }
     let cellRowspan = 1
     let cellColspan = 1
 
@@ -817,7 +836,7 @@ class TableContainer extends Container {
         let nextRow = tableCell.row().next
         while (i > 1) {
           let refInNextRow = nextRow.children
-            .reduce((result, cell) => {
+            .reduce((result: TableCell, cell: TableCell) => {
               let compareRect = getRelativeRect(
                 tableCell.domNode.getBoundingClientRect(),
                 editorWrapper
@@ -845,10 +864,10 @@ class TableContainer extends Container {
     })
   }
 
-  rows() {
-    const body = this.children.tail
+  rows() : InlineBlot[] {
+    const body = this.children.tail as InlineBlot
     if (body == null) return []
-    return body.children.map(row => row)
+    return body.children.map((row: InlineBlot) => row)
   }
 }
 TableContainer.blotName = "table-container"
@@ -856,11 +875,12 @@ TableContainer.className = "quill-better-table"
 TableContainer.tagName = "TABLE"
 
 class TableViewWrapper extends Container {
-  constructor (scroll, domNode) {
+  constructor (scroll: any, domNode: any) {
     super(scroll, domNode)
-    const quill = Quill.find(scroll.domNode.parentNode)
-    domNode.addEventListener('scroll', (e) => {
-      const tableModule = quill.getModule('better-table')
+    const quill = Quill.find(scroll.domNode.parentNode) as Quill
+    domNode.addEventListener('scroll', (e: any) => {
+      // Inputed as any because the type was not exists when updating this code.
+      const tableModule = quill.getModule('better-table') as any
       if (tableModule.columnTool) {
         tableModule.columnTool.domNode.scrollLeft = e.target.scrollLeft
       }
@@ -901,14 +921,14 @@ TableColGroup.requiredContainer = TableContainer
 TableCol.requiredContainer = TableColGroup
 
 
-function rowId() {
+function rowId() : string {
   const id = Math.random()
     .toString(36)
     .slice(2, 6)
   return `row-${id}`
 }
 
-function cellId() {
+function cellId() : string {
   const id = Math.random()
     .toString(36)
     .slice(2, 6)
@@ -934,4 +954,3 @@ export {
   CELL_IDENTITY_KEYS,
   CELL_ATTRIBUTES
 }
-

@@ -1,15 +1,22 @@
 import Quill from 'quill'
 import { css } from '../utils'
+import { TableContainer } from '../formats/table'
 
 const COL_TOOL_HEIGHT = 12
 const COL_TOOL_CELL_HEIGHT = 12
-const ROW_TOOL_WIDTH = 12
+// const ROW_TOOL_WIDTH = 12
 const CELL_MIN_WIDTH = 50
 const PRIMARY_COLOR = '#35A7ED'
 
 export default class TableColumnTool {
-  constructor (table, quill, options) {
-    if (!table) return null
+  table: any
+  quill: Quill
+  options: any
+  domNode: any
+
+  constructor (table: any, quill: Quill, options: any) {
+    if (!table) return
+
     this.table = table
     this.quill = quill
     this.options = options
@@ -19,8 +26,9 @@ export default class TableColumnTool {
   }
 
   initColTool () {
-    const parent = this.quill.root.parentNode
-    const tableRect = this.table.getBoundingClientRect()
+    const parent = this.quill.root.parentNode as HTMLElement
+    // Commented because never used when write to Typescript!!
+    // const tableRect = this.table.getBoundingClientRect()
     const containerRect = parent.getBoundingClientRect()
     const tableViewRect = this.table.parentNode.getBoundingClientRect()
 
@@ -49,7 +57,7 @@ export default class TableColumnTool {
   }
 
   updateToolCells () {
-    const tableContainer = Quill.find(this.table)
+    const tableContainer = Quill.find(this.table) as any
     const CellsInFirstRow = tableContainer.children.tail.children.head.children
     const tableCols = tableContainer.colGroup().children
     const cellsNumber = computeCellsNumber(CellsInFirstRow)
@@ -69,7 +77,7 @@ export default class TableColumnTool {
           'min-width': `${colWidth}px`
         })
       } else if (existCells[index] && index >= cellsNumber) {
-        existCells[index].remove()
+        (existCells[index] as HTMLElement).remove()
       } else {
         toolCell = existCells[index]
         // set tool cell min-width
@@ -85,8 +93,8 @@ export default class TableColumnTool {
     return null
   }
 
-  addColCellHolderHandler(cell) {
-    const tableContainer = Quill.find(this.table)
+  addColCellHolderHandler(cell: any) {
+    const tableContainer = Quill.find(this.table) as TableContainer
     const $holder = cell.querySelector(".qlbt-col-tool-cell-holder")
     let dragging = false
     let x0 = 0
@@ -94,11 +102,11 @@ export default class TableColumnTool {
     let delta = 0
     let width0 = 0
     // helpLine relation varrible
-    let tableRect = {}
-    let cellRect = {}
-    let $helpLine = null
+    let tableRect = { height: 0, width: 0, top: 0, left: 0 }
+    let cellRect = { left: 0, width: 0, top: 0, height: 0 }
+    let $helpLine: any = null
 
-    const handleDrag = e => {
+    const handleDrag = (e: any)=> {
       e.preventDefault()
 
       if (dragging) {
@@ -116,11 +124,11 @@ export default class TableColumnTool {
       }
     }
 
-    const handleMouseup = e => {
+    const handleMouseup = (e: any) => {
       e.preventDefault()
       const existCells = Array.from(this.domNode.querySelectorAll('.qlbt-col-tool-cell'))
       const colIndex = existCells.indexOf(cell)
-      const colBlot = tableContainer.colGroup().children.at(colIndex)
+      const colBlot = tableContainer.colGroup().children.at(colIndex) as any
 
       if (dragging) {
         colBlot.format('width', width0 + delta)
@@ -136,17 +144,17 @@ export default class TableColumnTool {
 
       document.removeEventListener('mousemove', handleDrag, false)
       document.removeEventListener('mouseup', handleMouseup, false)
-      tableRect = {}
-      cellRect = {}
+      tableRect = { height: 0, width: 0, top: 0, left: 0 }
+      cellRect = { left: 0, width: 0, top: 0, height: 0 }
       $helpLine.remove()
       $helpLine = null
       tableContainer.updateTableWidth()
 
-      const tableSelection = this.quill.getModule('better-table').tableSelection
+      const tableSelection = (this.quill.getModule('better-table') as any).tableSelection as any
       tableSelection && tableSelection.clearSelection()
     }
 
-    const handleMousedown = e => {
+    const handleMousedown = (e: any) => {
       document.addEventListener('mousemove', handleDrag, false)
       document.addEventListener('mouseup', handleMouseup, false)
 
@@ -177,8 +185,8 @@ export default class TableColumnTool {
   }
 }
 
-function computeCellsNumber (CellsInFirstRow) {
-  return CellsInFirstRow.reduce((sum, cell) => {
+function computeCellsNumber (CellsInFirstRow: any) {
+  return CellsInFirstRow.reduce((sum: any, cell: any) => {
     const cellColspan = cell.formats().colspan
     sum = sum + parseInt(cellColspan, 10)
     return sum
