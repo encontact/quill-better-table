@@ -982,8 +982,6 @@ TableBody.tagName = "TBODY";
 class TableCol extends table_Block {
   static create(value) {
     let node = super.create(value);
-    console.log(node, 'valor');
-    console.log(COL_ATTRIBUTES, 'atributos');
     COL_ATTRIBUTES.forEach(attrName => {
       node.setAttribute(`${attrName}`, value[attrName] || COL_DEFAULT[attrName]);
     });
@@ -1450,7 +1448,6 @@ class TableSelection {
     this.helpLinesInitial();
     this.quill.root.addEventListener('mousedown', this.selectingHandler, false);
     this.quill.on('text-change', this.clearSelectionHandler);
-    console.log(table);
   }
   helpLinesInitial() {
     let parent = this.quill.root.parentNode;

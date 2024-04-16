@@ -7,18 +7,18 @@ Esse módulo é uma extensão do ([quill-better-table](https://github.com/soccer
 Instale a dependência em sua aplicação:
 
 ```
-npm i table-enki@latest 
+npm i @encontactlabs/quill-table@latest 
 
 ou
 
-yarn add table-enki@latest
+yarn add @encontactlabs/quill-table@latest
 ```
 
 após a dependência ser instalada importe ela no topo arquivo ajuntamente com os seus estilos:
 
 ```
-  import QuillBetterTable from 'table-enki';
-  import 'table-enki/dist/quill-better-table.css';
+  import QuillBetterTable from '@encontactlabs/quill-table;
+  import '@encontactlabs/quill-table/dist/quill-better-table.css';
 ```
 
 

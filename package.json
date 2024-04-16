@@ -1,6 +1,6 @@
 {
-  "name": "@encontactlabs/quill-better-table",
-  "version": "1.0.0",
+  "name": "@encontactlabs/quill-table",
+  "version": "1.0.1",
   "description": "Módulo para tabelas no quilljs baseado no quill-better-table",
   "main": "dist/quill-better-table.js",
   "scripts": {
