@@ -99,14 +99,14 @@ class BetterTable extends Module {
       })[0]
 
       let isTargetCellSelected = this.tableSelection?.selectedTds
-        .map(tableCell => tableCell.domNode)
-        .includes(cellNode)
+        ?.map(tableCell => tableCell.domNode)
+        ?.includes(cellNode)
 
       if (this.tableSelection.selectedTds.length <= 0 ||
         !isTargetCellSelected) {
         this.tableSelection.setSelection(
-          cellNode.getBoundingClientRect(),
-          cellNode.getBoundingClientRect()
+          cellNode?.getBoundingClientRect(),
+          cellNode?.getBoundingClientRect()
         )
       }
 

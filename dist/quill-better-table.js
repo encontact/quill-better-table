@@ -1879,9 +1879,9 @@ class BetterTable extends Module {
       const cellNode = path.filter(node => {
         return node.tagName && node.tagName.toUpperCase() === 'TD' && node.getAttribute('data-row');
       })[0];
-      let isTargetCellSelected = this.tableSelection?.selectedTds.map(tableCell => tableCell.domNode).includes(cellNode);
+      let isTargetCellSelected = this.tableSelection?.selectedTds?.map(tableCell => tableCell.domNode)?.includes(cellNode);
       if (this.tableSelection.selectedTds.length <= 0 || !isTargetCellSelected) {
-        this.tableSelection.setSelection(cellNode.getBoundingClientRect(), cellNode.getBoundingClientRect());
+        this.tableSelection.setSelection(cellNode?.getBoundingClientRect(), cellNode?.getBoundingClientRect());
       }
       if (this.tableOperationMenu) this.tableOperationMenu = this.tableOperationMenu.destroy();
       if (tableNode) {
@@ -2227,7 +2227,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__912__;
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-/******/ 		__webpack_require__.h = () => ("648b606cad1ee0cc956c")
+/******/ 		__webpack_require__.h = () => ("bdaf443a67e412a515b1")
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/global */

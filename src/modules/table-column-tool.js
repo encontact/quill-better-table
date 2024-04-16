@@ -57,7 +57,7 @@ export default class TableColumnTool {
 
     for (let index = 0; index < Math.max(cellsNumber, existCells.length); index++) {
       let col = tableCols.at(index)
-      let colWidth = col && parseInt(col.formats()[col.statics.blotName].width, 10)
+      let colWidth = col && parseInt(col.formats()[col.statics.blotName]?.width, 10)
       // if cell already exist
       let toolCell = null
       if (!existCells[index]) {
