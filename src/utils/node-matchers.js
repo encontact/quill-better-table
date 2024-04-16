@@ -1,5 +1,5 @@
-import Quill from 'quill'
-import { _omit, convertToHex } from './index'
+import Quill from 'quill';
+import { _omit, convertToHex } from './index';
 
 const Delta = Quill.import('delta')
 
@@ -99,11 +99,13 @@ export function matchTableHeader (node, delta, scroll) {
   const colspan = node.getAttribute('colspan') || false
   const rowspan = node.getAttribute('rowspan') || false
 
+
   // bugfix: empty table cells copied from other place will be removed unexpectedly
   if (delta.length() === 0) {
     delta = new Delta().insert('\n', {
       'table-cell-line': { row: rowId, cell: cellId, rowspan, colspan }
     })
+
     return delta
   }
 

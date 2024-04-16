@@ -23,7 +23,7 @@ export default class TableColumnTool {
     const tableRect = this.table.getBoundingClientRect()
     const containerRect = parent.getBoundingClientRect()
     const tableViewRect = this.table.parentNode.getBoundingClientRect()
-
+    
     this.domNode = document.createElement('div')
     this.domNode.classList.add('qlbt-col-tool')
     this.updateToolCells()

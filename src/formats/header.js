@@ -1,9 +1,9 @@
 import Quill from "quill"
-import { 
-  TableCell,
-  TableCellLine,
+import {
+  CELL_ATTRIBUTES,
   CELL_IDENTITY_KEYS,
-  CELL_ATTRIBUTES
+  TableCell,
+  TableCellLine
 } from './table'
 
 const Block = Quill.import("blots/block")

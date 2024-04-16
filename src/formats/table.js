@@ -327,6 +327,7 @@ TableBody.tagName = "TBODY"
 
 class TableCol extends Block {
   static create (value) {
+    
     let node = super.create(value)
     COL_ATTRIBUTES.forEach(attrName => {
       node.setAttribute(`${attrName}`, value[attrName] || COL_DEFAULT[attrName])
@@ -363,7 +364,7 @@ class TableColGroup extends Container {}
 TableColGroup.blotName = "table-col-group"
 TableColGroup.tagName = "colgroup"
 
-class TableContainer extends Container {
+ class TableContainer extends Container {
   static create() {
     let node = super.create()
     return node
@@ -374,14 +375,17 @@ class TableContainer extends Container {
     this.updateTableWidth()
   }
 
-  updateTableWidth () {
+   updateTableWidth () {
     setTimeout(() => {
       const colGroup = this.colGroup()
+
       if (!colGroup) return
       const tableWidth = colGroup.children.reduce((sumWidth, col) => {
-        sumWidth = sumWidth + parseInt(col.formats()[TableCol.blotName].width, 10)
-        return sumWidth
+        sumWidth = sumWidth + parseInt(col.formats()[TableCol.blotName]?.width, 10)
+        return sumWidth 
       }, 0)
+
+
       this.domNode.style.width = `${tableWidth}px`
     }, 0)
   }
@@ -855,6 +859,8 @@ TableContainer.blotName = "table-container"
 TableContainer.className = "quill-better-table"
 TableContainer.tagName = "TABLE"
 
+
+
 class TableViewWrapper extends Container {
   constructor (scroll, domNode) {
     super(scroll, domNode)
@@ -916,22 +922,13 @@ function cellId() {
 }
 
 export {
+  CELL_ATTRIBUTES,
+  // attributes
+  CELL_IDENTITY_KEYS, cellId,
+  // identity getters
+  rowId, TableBody, TableCell, TableCellLine,
   // blots
   TableCol,
-  TableColGroup,
-  TableCellLine,
-  TableCell,
-  TableRow,
-  TableBody,
-  TableContainer,
-  TableViewWrapper,
-
-  // identity getters
-  rowId,
-  cellId,
-
-  // attributes
-  CELL_IDENTITY_KEYS,
-  CELL_ATTRIBUTES
+  TableColGroup, TableContainer, TableRow, TableViewWrapper
 }
 

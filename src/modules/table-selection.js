@@ -1,6 +1,6 @@
 import Quill from 'quill'
-import { css, getRelativeRect } from '../utils'
 import { TableCell } from '../formats/table'
+import { css, getRelativeRect } from '../utils'
 
 const PRIMARY_COLOR = '#0589f3'
 const LINE_POSITIONS = ['left', 'right', 'top', 'bottom']
@@ -23,7 +23,8 @@ export default class TableSelection {
       this.selectingHandler,
       false)
 
-    this.quill.on('text-change', this.clearSelectionHandler )
+      this.quill.on('text-change', this.clearSelectionHandler )
+         
   }
 
   helpLinesInitial () {

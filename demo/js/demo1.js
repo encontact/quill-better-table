@@ -2,6 +2,9 @@ import QuillBetterTable from 'src/quill-better-table.js'
 // import better-table styles file
 import 'src/assets/quill-better-table.scss'
 
+
+
+
 Quill.register({
   'modules/better-table': QuillBetterTable
 }, true)

@@ -1,13 +1,13 @@
 import Quill from 'quill'
 import TableColumnTool from './modules/table-column-tool'
-import TableSelection from './modules/table-selection'
 import TableOperationMenu from './modules/table-operation-menu'
+import TableSelection from './modules/table-selection'
 
 // import table node matchers
 import {
+  matchTable,
   matchTableCell,
-  matchTableHeader,
-  matchTable
+  matchTableHeader
 } from './utils/node-matchers'
 
 import { getEventComposedPath } from './utils/index'
@@ -16,17 +16,17 @@ const Module = Quill.import('core/module')
 const Delta = Quill.import('delta')
 
 import {
+  TableBody,
+  TableCell,
+  TableCellLine,
   TableCol,
   TableColGroup,
-  TableCellLine,
-  TableCell,
-  TableRow,
-  TableBody,
   TableContainer,
+  TableRow,
   TableViewWrapper,
-  rowId,
-  cellId
-} from './formats/table';
+  cellId,
+  rowId
+} from './formats/table'
 
 class BetterTable extends Module {
   static register() {
@@ -98,7 +98,7 @@ class BetterTable extends Module {
           node.getAttribute('data-row')
       })[0]
 
-      let isTargetCellSelected = this.tableSelection.selectedTds
+      let isTargetCellSelected = this.tableSelection?.selectedTds
         .map(tableCell => tableCell.domNode)
         .includes(cellNode)
 
